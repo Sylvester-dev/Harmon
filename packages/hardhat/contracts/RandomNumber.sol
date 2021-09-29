@@ -2,7 +2,7 @@ pragma solidity 0.6.6;
 
 import "@chainlink/contracts/src/v0.6/VRFConsumerBase.sol";
 
-contract RandomNumberConsumer is VRFConsumerBase {
+contract RandomNumber is VRFConsumerBase {
     
     bytes32 internal keyHash;
     uint256 internal fee;
@@ -31,12 +31,8 @@ contract RandomNumberConsumer is VRFConsumerBase {
      * Callback function used by VRF Coordinator
      */
     function fulfillRandomness(bytes32 requestId, uint256 randomness) internal override {
-<<<<<<< HEAD
-        randomResult = randomness; 
-    }
-=======
-        randomResult = randomness.mod(100).add(1);  //generate RN b/w 1-100
+        randomResult = randomness;
+
     }
 
->>>>>>> 1e7afcd1a7aa3a3f75b855f04056107bbac64cbb
 }

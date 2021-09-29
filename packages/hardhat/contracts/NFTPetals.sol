@@ -1,4 +1,4 @@
-pragma solidity >=0.6.0 <0.7.0;
+pragma solidity ^0.6.6;
 //SPDX-License-Identifier: MIT
 
 import "@openzeppelin/contracts/token/ERC721/ERC721.sol";
@@ -10,7 +10,7 @@ import "./Data.sol";
 import "./RandomNumber.sol";
 // GET LISTED ON OPENSEA: https://testnets.opensea.io/get-listed/step-two
 
-contract YourCollectible is ERC721, Ownable {
+contract YourCollectible is ERC721, Ownable ,RandomNumber {
 
   using Counters for Counters.Counter;
   Counters.Counter private _tokenIds;
@@ -19,7 +19,7 @@ contract YourCollectible is ERC721, Ownable {
     // RELEASE THE LOOGIES!
   }
 
-  mapping (uint256 => bytes3) public color;
+  mapping (uint256 => uint256) public color;
 
    uint256 mintDeadline = block.timestamp + 24 hours;
 
@@ -33,9 +33,11 @@ contract YourCollectible is ERC721, Ownable {
       uint256 id = _tokenIds.current();
       _mint(msg.sender, id);
 
-      bytes32 predictableRandom = randomResult;
-      color[id] = bytes2(predictableRandom[0]) | ( bytes2(predictableRandom[1]) >> 8 ) | ( bytes3(predictableRandom[2]) >> 16 );
+      bytes32 rr = getRandomNumber();
+      fulfillRandomness(rr, 5364);
 
+      uint256 finalResult = RandomNumber.randomResult;
+      color[id] = finalResult;
       return id;
   }
 
