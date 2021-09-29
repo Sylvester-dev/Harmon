@@ -1,42 +1,116 @@
-// SPDX-License-Identifier: MIT
-pragma solidity ^0.7.6;
+pragma solidity >=0.6.0 <0.7.0;
+//SPDX-License-Identifier: MIT
 
-import '@openzeppelin/contracts/token/ERC721/ERC721.sol';
-import '@openzeppelin/contracts/utils/Counters.sol';
-import '@openzeppelin/contracts/math/SafeMath.sol';
+import "@openzeppelin/contracts/token/ERC721/ERC721.sol";
+import "@openzeppelin/contracts/utils/Counters.sol";
+import "@openzeppelin/contracts/access/Ownable.sol";
+//learn more: https://docs.openzeppelin.com/contracts/3.x/erc721
 
-abstract contract NFT is ERC721 {
-    using SafeMath for uint256;
-    using Counters for Counters.Counter;
+import "./Data.sol";
+import "./RandomNumber.sol";
+// GET LISTED ON OPENSEA: https://testnets.opensea.io/get-listed/step-two
 
-    Counters.Counter private _tokenIdTracker;
+contract YourCollectible is ERC721, Ownable {
 
-    mapping(uint256 => uint256) public stakedBlockNumber;
+  using Counters for Counters.Counter;
+  Counters.Counter private _tokenIds;
 
-    constructor(string memory _name, string memory _symbol) ERC721(_name, _symbol) {
-        _setBaseURI('');
-    }
+  constructor() public ERC721("Petals", "PEL") {
+    // RELEASE THE LOOGIES!
+  }
 
-    function _safeMint(address to, bytes memory data) internal virtual {
-        uint256 currentId = _tokenIdTracker.current();
-        super._safeMint(to, currentId, data);
-        stakedBlockNumber[currentId] = block.number;
-        _tokenIdTracker.increment();
-    }
+  mapping (uint256 => bytes3) public color;
 
-    function _burn(uint256 tokenId) internal virtual override {
-        super._burn(tokenId);
-        delete stakedBlockNumber[tokenId];
-    }
+   uint256 mintDeadline = block.timestamp + 24 hours;
 
-    function tokenURI(uint256 tokenId) public view virtual override returns (string memory) {
-        require(_exists(tokenId), 'NFT: URI query for nonexistent token');
-        return _tokenURI(tokenId);
-    }
+  function mintItem()
+      public
+      returns (uint256)
+  {
+      require( block.timestamp < mintDeadline, "DONE MINTING");
+      _tokenIds.increment();
 
-    function mint() public virtual;
+      uint256 id = _tokenIds.current();
+      _mint(msg.sender, id);
 
-    function burn(uint256 tokenId) public virtual;
+      bytes32 predictableRandom = randomResult;
+      color[id] = bytes2(predictableRandom[0]) | ( bytes2(predictableRandom[1]) >> 8 ) | ( bytes3(predictableRandom[2]) >> 16 );
 
-    function _tokenURI(uint256 tokenId) internal view virtual returns (string memory);
+      return id;
+  }
+
+  function tokenURI(uint256 id) public view override returns (string memory) {
+      require(_exists(id), "not exist");
+      return Data.tokenURI( ownerOf(id), id, color[id]);
+  }
 }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+// // SPDX-License-Identifier: MIT
+// pragma solidity ^0.7.6;
+
+// import '@openzeppelin/contracts/token/ERC721/ERC721.sol';
+// import '@openzeppelin/contracts/utils/Counters.sol';
+// import '@openzeppelin/contracts/math/SafeMath.sol';
+
+// abstract contract NFT is ERC721 {
+//     using SafeMath for uint256;
+//     using Counters for Counters.Counter;
+
+//     Counters.Counter private _tokenIdTracker;
+
+//     mapping(uint256 => uint256) public stakedBlockNumber;
+
+//     constructor(string memory _name, string memory _symbol) ERC721(_name, _symbol) {
+//         _setBaseURI('');
+//     }
+
+//     function _safeMint(address to, bytes memory data) internal virtual {
+//         uint256 currentId = _tokenIdTracker.current();
+//         super._safeMint(to, currentId, data);
+//         stakedBlockNumber[currentId] = block.number;
+//         _tokenIdTracker.increment();
+//     }
+
+//     function _burn(uint256 tokenId) internal virtual override {
+//         super._burn(tokenId);
+//         delete stakedBlockNumber[tokenId];
+//     }
+
+//     function tokenURI(uint256 tokenId) public view virtual override returns (string memory) {
+//         require(_exists(tokenId), 'NFT: URI query for nonexistent token');
+//         return _tokenURI(tokenId);
+//     }
+
+//     function mint() public virtual;
+
+//     function burn(uint256 tokenId) public virtual;
+
+//     function _tokenURI(uint256 tokenId) internal view virtual returns (string memory);
+// }
