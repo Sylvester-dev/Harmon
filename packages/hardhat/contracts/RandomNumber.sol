@@ -42,7 +42,4 @@ contract RandomNumberConsumer is VRFConsumerBase {
         randomResult = randomness.mod(100).add(1);  //generate RN b/w 1-100
     }
 
-    function getRandomNumber() external view result(uint 256){
-        return randomResult;
-    }
 }

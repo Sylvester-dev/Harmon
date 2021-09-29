@@ -278,6 +278,15 @@ module.exports = {
         },
       },
       {
+        version: "0.4.24",
+        settings: {
+          optimizer: {
+            enabled: true,
+            runs: 200,
+          },
+        },
+      },
+      {
         version: "0.5.0",
         settings: {
           optimizer: {
@@ -287,7 +296,7 @@ module.exports = {
         },
       },
       {
-        version: "0.6.7",
+        version: "0.6.6",
         settings: {
           optimizer: {
             enabled: true,
